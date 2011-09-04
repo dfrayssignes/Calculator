@@ -3,12 +3,56 @@
 //  Calculator
 //
 //  Created by Denis Frayssignes on 08/08/2011.
-//  Copyright 2011 BNP Paribas. All rights reserved.
 //
 
 #import "CalculatorViewController.h"
 
+@interface CalculatorViewController()
+    @property(readonly) CalculatorBrain *brain;
+@end
+
 @implementation CalculatorViewController
+
+- (CalculatorBrain *)brain
+{
+    if (!brain){
+        brain = [[CalculatorBrain alloc] init];
+    }
+    return brain;
+}
+
+- (IBAction)digitPressed:(UIButton *)sender
+{
+    NSString *digit = [[sender titleLabel] text];
+    if (![digit isEqual:@"."] || ([digit isEqual:@"."] && dotAllowed)) {
+        if ([digit isEqual:@"."]) {
+            dotAllowed = NO;
+        }
+        if (userIsInTheMiddleOfTypingNumber) {
+            [display setText:[[display text] stringByAppendingString:digit]];
+        } else {
+            [display setText:digit];
+            userIsInTheMiddleOfTypingNumber = YES;
+        }
+    }
+}
+
+- (IBAction)operationPressed:(UIButton *)sender
+{
+    if (userIsInTheMiddleOfTypingNumber) {
+         self.brain.operand = [[display text] doubleValue];
+         userIsInTheMiddleOfTypingNumber = NO;
+         dotAllowed = YES;
+    }
+    NSString *operation = [[sender titleLabel] text];
+    [displayOperation setText:operation];
+    if ([operation isEqual:@"C"]) {
+        display.text = @"";
+    } else {
+        double result = [self.brain performOperation:operation];
+        [display setText:[NSString stringWithFormat: @"%g", result]];
+    }
+}
 
 - (void)didReceiveMemoryWarning
 {

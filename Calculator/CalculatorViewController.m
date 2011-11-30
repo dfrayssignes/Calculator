@@ -40,7 +40,7 @@
 - (IBAction)operationPressed:(UIButton *)sender
 {
     if (userIsInTheMiddleOfTypingNumber) {
-         self.brain.operand = [[display text] doubleValue];
+        [self.brain setOperand:[[NSDecimalNumber alloc]initWithString:[display text]]];
          userIsInTheMiddleOfTypingNumber = NO;
          dotAllowed = YES;
     }
@@ -49,8 +49,8 @@
     if ([operation isEqual:@"C"]) {
         display.text = @"";
     } else {
-        double result = [self.brain performOperation:operation];
-        [display setText:[NSString stringWithFormat: @"%g", result]];
+        NSDecimalNumber *result = [self.brain performOperation:operation];
+        [display setText:[NSString stringWithFormat: @"%@", result]];
     }
 }
 
